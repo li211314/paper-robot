@@ -1,0 +1,26 @@
+# ESP-IDF build output and generated configuration
+/build/
+/sdkconfig
+/sdkconfig.old
+/compile_commands.json
+/managed_components/
+
+# Local editor and tool configuration
+/.vscode/
+/.idea/
+/.claude/
+/.agents/
+/.codex/
+
+# Local logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local environment files
+.env
+.env.*
+!.env.example
