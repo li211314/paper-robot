@@ -200,18 +200,21 @@ cardboard_robot/
 │   └── PROJECT_PLAN.md
 └── main/
     ├── CMakeLists.txt
-    ├── robot_main.c
-    ├── robot_config.h
-    ├── behavior.c
-    ├── behavior.h
-    ├── input.c
-    ├── input.h
-    ├── servo.c
-    ├── servo.h
-    ├── ssd1306.c
-    ├── ssd1306.h
-    ├── display.c
-    └── display.h
+    ├── include/
+    │   ├── robot_config.h
+    │   ├── robot_types.h
+    │   ├── behavior.h
+    │   ├── input.h
+    │   ├── servo.h
+    │   ├── ssd1306.h
+    │   └── display.h
+    └── src/
+        ├── robot_main.c
+        ├── behavior.c
+        ├── input.c
+        ├── servo.c
+        ├── ssd1306.c
+        └── display.c
 ```
 
 该目录是独立 ESP-IDF 工程，不修改、不复制到 `hello_world` 示例目录。
@@ -228,6 +231,14 @@ cardboard_robot/
 
 ## 8. 实施步骤
 
+### 阶段 0：板载灯自检（已完成的早期验证）
+
+- 使用 GPIO8 验证 ESP32-C3 SuperMini 可以正常编译、烧录和运行。
+- 标准版 Super Mini 的板载用户灯是单色蓝色 LED。
+- 板载蓝灯使用 GPIO8，低电平点亮。
+- 启动后闪烁 3 次并保持常亮。
+- 正式固件已移除分模式自检开关。
+
 ### 阶段 1：工程骨架
 
 - 新建独立 ESP-IDF 工程。
@@ -239,13 +250,16 @@ cardboard_robot/
 ### 阶段 2：基础硬件驱动
 
 - 实现 LEDC 双舵机 PWM。
+- 加入 SG90 平滑步进、方向反转重启和脉宽限幅。
 - 实现红外和触摸 GPIO 读取与防抖。
 - 添加串口日志，打印输入状态和当前目标脉宽。
-- 添加单独的舵机空载测试流程。
 
 ### 阶段 3：OLED 与表情
 
 - 实现 SSD1306 I2C 初始化和显存刷新。
+- 使用 `components/ssd1306` 中的 MIT 许可驱动。
+- 固定 SDA=GPIO0、SCL=GPIO1，I2C 地址 0x3C。
+- 正常运行时绘制机器人脸，并在空闲状态自动眨眼。
 - 绘制普通、眨眼、靠近和触摸表情。
 - 验证屏幕缺失时程序仍能继续转头。
 
@@ -331,6 +345,8 @@ idf.py -p COM端口 flash monitor
 当前按以下条件设计：
 
 - 主控为 ESP32-C3 SuperMini。
+- 板载灯使用 GPIO8 上的单色蓝色用户灯，低电平点亮。
+- 商家资料中的 WS2812 示例面向外接灯带，不用于标准版板载蓝灯。
 - OLED 为 SSD1306 128x64，I2C 地址 0x3C。
 - 两个红外模块使用数字 OUT 输出。
 - 触摸模块为 TTP223，触摸时输出高电平。

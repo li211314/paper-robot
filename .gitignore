@@ -5,8 +5,13 @@
 /compile_commands.json
 /managed_components/
 
+# Vendor-provided board files and binary packages
+/docs/ESP32-C3/
+/docs/ESP32-C3.zip
+
 # Local editor and tool configuration
 /.vscode/
+/.clangd
 /.idea/
 /.claude/
 /.agents/
